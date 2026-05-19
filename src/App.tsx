@@ -36,6 +36,15 @@ function circleTouchesRect(circle: Point, radius: number, rect: Rect) {
   return distanceX * distanceX + distanceY * distanceY <= radius * radius
 }
 
+function pointTouchesRect(point: Point, rect: Rect) {
+  return (
+    point.x >= rect.x &&
+    point.x <= rect.x + rect.width &&
+    point.y >= rect.y &&
+    point.y <= rect.y + rect.height
+  )
+}
+
 function rectStyle(rect: Rect) {
   return {
     boxSizing: 'border-box' as const,
@@ -100,7 +109,7 @@ function App() {
 
     if (
       level.obstacles.some((obstacle) =>
-        circleTouchesRect(nextPosition, playerRadius, obstacle),
+        pointTouchesRect(nextPosition, obstacle),
       )
     ) {
       setPosition(startPosition)
