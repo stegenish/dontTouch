@@ -71,7 +71,64 @@ test('opens the menu with Escape and lets the player choose a new color', async 
   await user.click(screen.getByRole('button', { name: 'bytt farge' }))
   await user.click(screen.getByRole('button', { name: 'Velg Oransje' }))
 
-  expect(getPlayer()).toHaveStyle({ backgroundColor: '#f97316' })
+  expect(getPlayer()).toHaveStyle({ background: '#f97316' })
+})
+
+test('shows more colors and locks rainbow until level 10', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'bytt farge' }))
+
+  expect(screen.getByRole('button', { name: 'Velg Lys lilla' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Velg Lyseblå' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Velg Rosa' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Velg Blå' })).toBeInTheDocument()
+  expect(
+    screen.getByRole('button', { name: 'Velg Regnbue (låst til nivå 10)' }),
+  ).toBeDisabled()
+})
+
+test('unlocks rainbow when the player reaches level 10', async () => {
+  const user = userEvent.setup()
+  const savedObstacles = levels.slice(0, 10).map((level) => level.obstacles)
+  levels.slice(0, 10).forEach((level) => {
+    level.obstacles = []
+  })
+
+  render(<App />)
+
+  for (let level = 1; level < 10; level += 1) {
+    for (let i = 0; i < 43; i += 1) {
+      fireEvent.keyDown(window, { key: 'd' })
+    }
+
+    await user.click(screen.getByRole('button', { name: 'neste' }))
+  }
+
+  expect(screen.getByText('Nivå 10 av 25')).toBeInTheDocument()
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'bytt farge' }))
+
+  expect(screen.getByRole('button', { name: 'Velg Regnbue' })).toBeEnabled()
+
+  levels.slice(0, 10).forEach((level, index) => {
+    level.obstacles = savedObstacles[index]
+  })
+})
+
+test('can switch the menu language to English', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'bytt språk' }))
+  await user.click(screen.getByRole('button', { name: 'Velg språk engelsk' }))
+
+  expect(screen.getByRole('heading', { name: 'change language' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'back' })).toBeInTheDocument()
 })
 
 test('asks if the player is sure before restarting after winning', async () => {

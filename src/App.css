@@ -113,7 +113,8 @@
 
 .message-actions,
 .menu-card,
-.color-grid {
+.color-grid,
+.language-options {
   display: flex;
   gap: 12px;
   justify-content: center;
@@ -206,6 +207,8 @@ button:focus-visible {
 }
 
 .color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 72px);
   margin-top: 20px;
 }
 
@@ -214,6 +217,21 @@ button:focus-visible {
   height: 72px;
   min-height: 72px;
   padding: 0;
+}
+
+.color-choice:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.75);
+  opacity: 0.45;
+}
+
+.rainbow-choice {
+  background-size: 180% 180%;
+}
+
+.language-options {
+  flex-direction: column;
+  margin-top: 20px;
 }
 
 @media (max-width: 640px) {
@@ -232,5 +250,9 @@ button:focus-visible {
 
   .message-actions {
     flex-direction: column;
+  }
+
+  .color-grid {
+    grid-template-columns: repeat(2, 72px);
   }
 }

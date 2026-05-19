@@ -8,7 +8,15 @@ type Point = {
 }
 
 type GameStatus = 'playing' | 'crashed' | 'won'
-type MenuView = 'main' | 'colors'
+type MenuView = 'main' | 'colors' | 'language'
+type Language = 'nb' | 'en' | 'de'
+
+type ColorChoice = {
+  name: string
+  value: string
+  rainbow?: boolean
+  unlockLevel?: number
+}
 
 const playerRadius = 16
 const moveStep = 18
@@ -19,9 +27,97 @@ const colorChoices = [
   { name: 'Rød', value: '#ef4444' },
   { name: 'Oransje', value: '#f97316' },
   { name: 'Gul', value: '#facc15' },
-]
+  { name: 'Lys lilla', value: '#c4b5fd' },
+  { name: 'Lyseblå', value: '#7dd3fc' },
+  { name: 'Rosa', value: '#f9a8d4' },
+  { name: 'Blå', value: '#3b82f6' },
+  {
+    name: 'Regnbue',
+    value: 'linear-gradient(135deg, #ef4444, #f97316, #facc15, #22c55e, #3b82f6, #a855f7)',
+    rainbow: true,
+    unlockLevel: 10,
+  },
+] satisfies ColorChoice[]
 
 const defaultPlayerColor = '#7dd3fc'
+
+const text = {
+  nb: {
+    back: 'tilbake',
+    changeColor: 'bytt farge',
+    changeLanguage: 'bytt språk',
+    colorHeading: 'bytt farge',
+    continue: 'fortsett',
+    crash: 'du klarer dette:)',
+    controls: 'Bruk W, A, S og D for å bevege deg. ESC åpner menyen.',
+    gameTitle: 'Dont touch the red',
+    languageHeading: 'bytt språk',
+    levelOf: 'av',
+    next: 'neste',
+    no: 'nei',
+    obstacle: 'Rød firkant',
+    player: 'Spiller',
+    restart: 'restart',
+    selectLanguage: 'Velg språk',
+    selectColor: 'Velg',
+    sure: 'er du sikker',
+    unlockRainbow: 'låst til nivå 10',
+    win: 'du klarte det!',
+    yes: 'ja',
+  },
+  en: {
+    back: 'back',
+    changeColor: 'change color',
+    changeLanguage: 'change language',
+    colorHeading: 'change color',
+    continue: 'continue',
+    crash: 'you can do this :)',
+    controls: 'Use W, A, S and D to move. ESC opens the menu.',
+    gameTitle: 'Dont touch the red',
+    languageHeading: 'change language',
+    levelOf: 'of',
+    next: 'next',
+    no: 'no',
+    obstacle: 'Red square',
+    player: 'Player',
+    restart: 'restart',
+    selectLanguage: 'Choose language',
+    selectColor: 'Choose',
+    sure: 'are you sure',
+    unlockRainbow: 'locked until level 10',
+    win: 'you did it!',
+    yes: 'yes',
+  },
+  de: {
+    back: 'zurück',
+    changeColor: 'farbe wechseln',
+    changeLanguage: 'sprache wechseln',
+    colorHeading: 'farbe wechseln',
+    continue: 'weiter',
+    crash: 'du schaffst das :)',
+    controls: 'Benutze W, A, S und D zum Bewegen. ESC öffnet das Menü.',
+    gameTitle: 'Dont touch the red',
+    languageHeading: 'sprache wechseln',
+    levelOf: 'von',
+    next: 'weiter',
+    no: 'nein',
+    obstacle: 'Rotes Quadrat',
+    player: 'Spieler',
+    restart: 'restart',
+    selectLanguage: 'Sprache wählen',
+    selectColor: 'Wähle',
+    sure: 'bist du sicher',
+    unlockRainbow: 'gesperrt bis Level 10',
+    win: 'du hast es geschafft!',
+    yes: 'ja',
+  },
+}
+
+const languageChoices = [
+  { code: 'nb', label: 'norsk (bokmål)' },
+  { code: 'en', label: 'engelsk' },
+  { code: 'de', label: 'tysk' },
+] satisfies { code: Language; label: string }[]
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
@@ -63,13 +159,17 @@ function App() {
   const [menuView, setMenuView] = useState<MenuView>('main')
   const [playerColor, setPlayerColor] = useState(defaultPlayerColor)
   const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false)
+  const [language, setLanguage] = useState<Language>('nb')
 
+  const copy = text[language]
   const level = levels[levelIndex]
-  const levelLabel = `${level.name} av ${levels.length}`
+  const levelNumber = levelIndex + 1
+  const hasRainbow = levelNumber >= 10
+  const levelLabel = `Nivå ${levelNumber} ${copy.levelOf} ${levels.length}`
 
   const playerStyle = useMemo(
     () => ({
-      backgroundColor: playerColor,
+      background: playerColor,
       left: `${(position.x / board.width) * 100}%`,
       top: `${(position.y / board.height) * 100}%`,
       width: `${((playerRadius * 2) / board.width) * 100}%`,
@@ -155,7 +255,7 @@ function App() {
       <section className="game-header" aria-labelledby="game-title">
         <div>
           <p className="eyebrow">2D hinderløype</p>
-          <h1 id="game-title">Dont touch the red</h1>
+          <h1 id="game-title">{copy.gameTitle}</h1>
         </div>
         <div className="level-badge">{levelLabel}</div>
       </section>
@@ -166,7 +266,7 @@ function App() {
         style={{ aspectRatio: `${board.width} / ${board.height}` }}
       >
         <div
-          aria-label="Spiller"
+          aria-label={copy.player}
           className="player"
           data-testid="player"
           style={playerStyle}
@@ -174,7 +274,7 @@ function App() {
 
         {level.obstacles.map((obstacle) => (
           <div
-            aria-label="Rød firkant"
+            aria-label={copy.obstacle}
             className="obstacle"
             key={`${obstacle.x}-${obstacle.y}`}
             style={rectStyle(obstacle)}
@@ -185,55 +285,90 @@ function App() {
 
         {status !== 'playing' && (
           <div className="message-panel" role="status">
-            <h2>{status === 'crashed' ? 'du klarer dette:)' : 'du klarte det!'}</h2>
+            <h2>{status === 'crashed' ? copy.crash : copy.win}</h2>
             <div className="message-actions">
               {status === 'won' && (
                 <button type="button" onClick={goToNextLevel}>
-                  neste
+                  {copy.next}
                 </button>
               )}
               <button type="button" onClick={handleRestartClick}>
-                restart
+                {copy.restart}
               </button>
             </div>
           </div>
         )}
       </section>
 
-      <p className="controls-hint">Bruk W, A, S og D for å bevege deg. ESC åpner menyen.</p>
+      <p className="controls-hint">{copy.controls}</p>
 
       {isMenuOpen && (
         <div className="menu-backdrop" role="dialog" aria-modal="true">
           {menuView === 'main' ? (
             <div className="menu-card">
               <button type="button" onClick={() => setIsMenuOpen(false)}>
-                fortsett
+                {copy.continue}
               </button>
               <button type="button" onClick={() => setMenuView('colors')}>
-                bytt farge
+                {copy.changeColor}
+              </button>
+              <button type="button" onClick={() => setMenuView('language')}>
+                {copy.changeLanguage}
               </button>
             </div>
-          ) : (
+          ) : menuView === 'colors' ? (
             <div className="menu-card color-menu">
               <button
-                aria-label="Tilbake"
+                aria-label={copy.back}
                 className="back-button"
                 type="button"
                 onClick={() => setMenuView('main')}
               >
-                tilbake
+                {copy.back}
               </button>
-              <h2>bytt farge</h2>
+              <h2>{copy.colorHeading}</h2>
               <div className="color-grid">
-                {colorChoices.map((color) => (
+                {colorChoices.map((color) => {
+                  const isLocked = color.unlockLevel ? !hasRainbow : false
+                  const label = isLocked
+                    ? `${copy.selectColor} ${color.name} (${copy.unlockRainbow})`
+                    : `${copy.selectColor} ${color.name}`
+
+                  return (
+                    <button
+                      aria-label={label}
+                      className={`color-choice${color.rainbow ? ' rainbow-choice' : ''}`}
+                      disabled={isLocked}
+                      key={color.name}
+                      onClick={() => setPlayerColor(color.value)}
+                      style={{ background: color.value }}
+                      type="button"
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="menu-card color-menu">
+              <button
+                aria-label={copy.back}
+                className="back-button"
+                type="button"
+                onClick={() => setMenuView('main')}
+              >
+                {copy.back}
+              </button>
+              <h2>{copy.languageHeading}</h2>
+              <div className="language-options">
+                {languageChoices.map((choice) => (
                   <button
-                    aria-label={`Velg ${color.name}`}
-                    className="color-choice"
-                    key={color.value}
-                    onClick={() => setPlayerColor(color.value)}
-                    style={{ backgroundColor: color.value }}
+                    aria-label={`${copy.selectLanguage} ${choice.label}`}
+                    key={choice.code}
+                    onClick={() => setLanguage(choice.code)}
                     type="button"
-                  />
+                  >
+                    {choice.label}
+                  </button>
                 ))}
               </div>
             </div>
@@ -244,13 +379,13 @@ function App() {
       {isRestartConfirmOpen && (
         <div className="menu-backdrop" role="dialog" aria-modal="true">
           <div className="menu-card confirm-card">
-            <h2>er du sikker</h2>
+            <h2>{copy.sure}</h2>
             <div className="message-actions">
               <button type="button" onClick={resetLevel}>
-                ja
+                {copy.yes}
               </button>
               <button type="button" onClick={() => setIsRestartConfirmOpen(false)}>
-                nei
+                {copy.no}
               </button>
             </div>
           </div>
