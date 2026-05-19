@@ -63,9 +63,11 @@
 
 .player {
   z-index: 2;
+  aspect-ratio: 1;
   border: 3px solid #0f172a;
   border-radius: 999px;
   box-shadow: inset -5px -6px 0 rgba(0, 0, 0, 0.16);
+  transform: translate(-50%, -50%);
   transition:
     left 90ms linear,
     top 90ms linear,

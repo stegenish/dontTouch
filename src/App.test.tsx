@@ -12,8 +12,8 @@ test('shows the 2D game with a light blue player and a gold goal', () => {
   expect(screen.getByRole('heading', { name: 'Dont touch the red' })).toBeInTheDocument()
   expect(screen.getByLabelText('Spiller')).toHaveStyle({ backgroundColor: '#7dd3fc' })
   expect(screen.getByLabelText('Gull firkant')).toHaveStyle({
-    left: '820px',
-    top: '220px',
+    left: '91.11111111111111%',
+    top: '42.30769230769231%',
   })
 })
 
@@ -21,10 +21,10 @@ test('moves the player with WASD keys', () => {
   render(<App />)
 
   fireEvent.keyDown(window, { key: 'd' })
-  expect(getPlayer()).toHaveStyle({ left: '50px' })
+  expect(getPlayer()).toHaveStyle({ left: '7.333333333333333%' })
 
   fireEvent.keyDown(window, { key: 's' })
-  expect(getPlayer()).toHaveStyle({ top: '262px' })
+  expect(getPlayer()).toHaveStyle({ top: '53.46153846153846%' })
 })
 
 test('resets the player and shows encouragement after touching red', () => {
@@ -36,7 +36,10 @@ test('resets the player and shows encouragement after touching red', () => {
 
   expect(screen.getByText('du klarer dette:)')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'restart' })).toBeInTheDocument()
-  expect(getPlayer()).toHaveStyle({ left: '32px', top: '244px' })
+  expect(getPlayer()).toHaveStyle({
+    left: '5.333333333333334%',
+    top: '50%',
+  })
 })
 
 test('opens the menu with Escape and lets the player choose a new color', async () => {

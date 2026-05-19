@@ -86,10 +86,10 @@ function circleTouchesRect(circle: Point, radius: number, rect: Rect) {
 
 function rectStyle(rect: Rect) {
   return {
-    height: rect.height,
-    left: rect.x,
-    top: rect.y,
-    width: rect.width,
+    height: `${(rect.height / board.height) * 100}%`,
+    left: `${(rect.x / board.width) * 100}%`,
+    top: `${(rect.y / board.height) * 100}%`,
+    width: `${(rect.width / board.width) * 100}%`,
   }
 }
 
@@ -106,10 +106,9 @@ function App() {
   const playerStyle = useMemo(
     () => ({
       backgroundColor: playerColor,
-      height: playerRadius * 2,
-      left: position.x - playerRadius,
-      top: position.y - playerRadius,
-      width: playerRadius * 2,
+      left: `${(position.x / board.width) * 100}%`,
+      top: `${(position.y / board.height) * 100}%`,
+      width: `${((playerRadius * 2) / board.width) * 100}%`,
     }),
     [playerColor, position.x, position.y],
   )
