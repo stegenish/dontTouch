@@ -88,6 +88,7 @@ test('shows more colors and locks rainbow until level 10', async () => {
   expect(
     screen.getByRole('button', { name: 'Velg Regnbue (nå nivå 10)' }),
   ).toBeDisabled()
+  expect(screen.getByText('nå nivå 10')).toBeVisible()
 })
 
 test('unlocks rainbow when the player reaches level 10', async () => {

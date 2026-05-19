@@ -343,7 +343,11 @@ function App() {
                       onClick={() => setPlayerColor(color.value)}
                       style={{ background: color.value }}
                       type="button"
-                    />
+                    >
+                      {isLocked ? (
+                        <span className="locked-color-label">{copy.unlockRainbow}</span>
+                      ) : null}
+                    </button>
                   )
                 })}
               </div>
