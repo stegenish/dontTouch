@@ -38,6 +38,7 @@ function circleTouchesRect(circle: Point, radius: number, rect: Rect) {
 
 function rectStyle(rect: Rect) {
   return {
+    boxSizing: 'border-box' as const,
     height: `${(rect.height / board.height) * 100}%`,
     left: `${(rect.x / board.width) * 100}%`,
     top: `${(rect.y / board.height) * 100}%`,

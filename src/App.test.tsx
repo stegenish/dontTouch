@@ -26,6 +26,14 @@ test('has 25 playable levels that get more crowded', () => {
   expect(levels[24].obstacles.length).toBeGreaterThan(levels[0].obstacles.length)
 })
 
+test('keeps red obstacle hitboxes aligned with the visible rectangles', () => {
+  render(<App />)
+
+  expect(screen.getAllByLabelText('Rød firkant')[0]).toHaveStyle({
+    boxSizing: 'border-box',
+  })
+})
+
 test('moves the player with WASD keys', () => {
   render(<App />)
 

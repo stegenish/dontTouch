@@ -58,6 +58,7 @@
 .player,
 .obstacle,
 .goal {
+  box-sizing: border-box;
   position: absolute;
 }
 
