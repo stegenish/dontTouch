@@ -77,9 +77,9 @@
 
 .obstacle {
   background: #ef4444;
-  border: 3px solid #991b1b;
-  border-radius: 4px;
-  box-shadow: inset -6px -6px 0 rgba(0, 0, 0, 0.18);
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
 }
 
 .goal {
