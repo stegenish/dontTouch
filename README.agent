@@ -1,0 +1,22 @@
+# Matteapp - agentorientering
+
+## Status
+Prosjektet er en ny React-app laget med Vite og pnpm. Det er ikke et Next.js-prosjekt.
+
+## Viktige filer
+- `src/App.tsx` inneholder forelopig Vite/React-startappen.
+- `src/main.tsx` monterer React-appen i `#root`.
+- `src/index.css` inneholder globale stiler og importerer Tailwind CSS.
+- `vite.config.ts` setter opp Vite med React og Tailwind.
+- `jest.config.cjs` og `babel.config.cjs` setter opp Jest for React- og TypeScript-tester.
+
+## Planlagt app
+Matteappen skal ha:
+- En leken startside med velkomsttekst for Lineus, Lily og Kian.
+- En startknapp som tar brukeren til oppgavesiden.
+- En oppgaveside der brukeren kan velge vanskelighetsgrad og generere matteoppgaver.
+
+## Kjente mangler
+- Selve matteappen er ikke implementert ennå.
+- Tailwind er installert og koblet inn, men UI-et bruker fortsatt Vite-malens startstil.
+- Det finnes bare en enkel røyk-test for startappen.
