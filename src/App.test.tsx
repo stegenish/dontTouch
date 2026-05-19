@@ -86,7 +86,7 @@ test('shows more colors and locks rainbow until level 10', async () => {
   expect(screen.getByRole('button', { name: 'Velg Rosa' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Velg Blå' })).toBeInTheDocument()
   expect(
-    screen.getByRole('button', { name: 'Velg Regnbue (låst til nivå 10)' }),
+    screen.getByRole('button', { name: 'Velg Regnbue (nå nivå 10)' }),
   ).toBeDisabled()
 })
 
