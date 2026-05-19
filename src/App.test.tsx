@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
+import { levels } from './levels'
 
 function getPlayer() {
   return screen.getByTestId('player')
@@ -10,11 +11,19 @@ test('shows the 2D game with a light blue player and a gold goal', () => {
   render(<App />)
 
   expect(screen.getByRole('heading', { name: 'Dont touch the red' })).toBeInTheDocument()
+  expect(screen.getByText('Nivå 1 av 25')).toBeInTheDocument()
   expect(screen.getByLabelText('Spiller')).toHaveStyle({ backgroundColor: '#7dd3fc' })
   expect(screen.getByLabelText('Gull firkant')).toHaveStyle({
     left: '91.11111111111111%',
     top: '42.30769230769231%',
   })
+})
+
+test('has 25 playable levels that get more crowded', () => {
+  expect(levels).toHaveLength(25)
+  expect(levels[0].name).toBe('Nivå 1')
+  expect(levels[24].name).toBe('Nivå 25')
+  expect(levels[24].obstacles.length).toBeGreaterThan(levels[0].obstacles.length)
 })
 
 test('moves the player with WASD keys', () => {

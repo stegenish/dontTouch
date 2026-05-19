@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { board, levels, type Rect } from './levels'
 import './App.css'
 
 type Point = {
@@ -6,62 +7,13 @@ type Point = {
   y: number
 }
 
-type Rect = Point & {
-  width: number
-  height: number
-}
-
-type Level = {
-  name: string
-  obstacles: Rect[]
-}
-
 type GameStatus = 'playing' | 'crashed' | 'won'
 type MenuView = 'main' | 'colors'
-
-const board = {
-  width: 900,
-  height: 520,
-}
 
 const playerRadius = 16
 const moveStep = 18
 const startPosition: Point = { x: 48, y: 260 }
 const goal: Rect = { x: 820, y: 220, width: 52, height: 82 }
-
-const levels: Level[] = [
-  {
-    name: 'Nivå 1',
-    obstacles: [
-      { x: 190, y: 70, width: 46, height: 290 },
-      { x: 360, y: 170, width: 46, height: 300 },
-      { x: 545, y: 40, width: 46, height: 290 },
-      { x: 690, y: 260, width: 46, height: 210 },
-    ],
-  },
-  {
-    name: 'Nivå 2',
-    obstacles: [
-      { x: 155, y: 50, width: 42, height: 260 },
-      { x: 270, y: 215, width: 42, height: 255 },
-      { x: 405, y: 45, width: 42, height: 255 },
-      { x: 540, y: 230, width: 42, height: 245 },
-      { x: 670, y: 85, width: 42, height: 270 },
-    ],
-  },
-  {
-    name: 'Nivå 3',
-    obstacles: [
-      { x: 140, y: 90, width: 38, height: 320 },
-      { x: 260, y: 0, width: 38, height: 215 },
-      { x: 260, y: 305, width: 38, height: 215 },
-      { x: 405, y: 120, width: 38, height: 280 },
-      { x: 545, y: 0, width: 38, height: 230 },
-      { x: 545, y: 310, width: 38, height: 210 },
-      { x: 690, y: 90, width: 38, height: 330 },
-    ],
-  },
-]
 
 const colorChoices = [
   { name: 'Rød', value: '#ef4444' },
@@ -102,6 +54,7 @@ function App() {
   const [playerColor, setPlayerColor] = useState(defaultPlayerColor)
 
   const level = levels[levelIndex]
+  const levelLabel = `${level.name} av ${levels.length}`
 
   const playerStyle = useMemo(
     () => ({
@@ -183,7 +136,7 @@ function App() {
           <p className="eyebrow">2D hinderløype</p>
           <h1 id="game-title">Dont touch the red</h1>
         </div>
-        <div className="level-badge">{level.name}</div>
+        <div className="level-badge">{levelLabel}</div>
       </section>
 
       <section
