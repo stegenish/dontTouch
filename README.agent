@@ -1,22 +1,26 @@
-# Matteapp - agentorientering
+# 2D spill - agentorientering
 
 ## Status
-Prosjektet er en ny React-app laget med Vite og pnpm. Det er ikke et Next.js-prosjekt.
+Prosjektet er en React-app laget med Vite og pnpm. Det er ikke et Next.js-prosjekt.
+Appen er nå et enkelt 2D hinderløype-spill.
 
 ## Viktige filer
-- `src/App.tsx` inneholder forelopig Vite/React-startappen.
+- `src/App.tsx` inneholder spilldata, kollisjonslogikk, tastaturstyring, nivåbytte og meny/fargevalg.
+- `src/App.css` inneholder spillbrett, spiller, hinder, gullmål, meldingspanel og meny-styling.
+- `src/App.test.tsx` tester rendering, WASD-bevegelse, rød kollisjon og fargevalg i menyen.
 - `src/main.tsx` monterer React-appen i `#root`.
 - `src/index.css` inneholder globale stiler og importerer Tailwind CSS.
 - `vite.config.ts` setter opp Vite med React og Tailwind.
 - `jest.config.cjs` og `babel.config.cjs` setter opp Jest for React- og TypeScript-tester.
 
-## Planlagt app
-Matteappen skal ha:
-- En leken startside med velkomsttekst for Lineus, Lily og Kian.
-- En startknapp som tar brukeren til oppgavesiden.
-- En oppgaveside der brukeren kan velge vanskelighetsgrad og generere matteoppgaver.
+## Spillregler
+- Spilleren starter som en lyseblå runding.
+- W går opp, A går venstre, S går ned og D går høyre.
+- Berører spilleren en rød firkant, flyttes spilleren tilbake til start og teksten `du klarer dette:)` vises med en restart-knapp.
+- Berører spilleren gullfirkanten, vises teksten `du klarte det!` med knappene `neste` og `restart`.
+- `neste` går til et vanskeligere nivå.
+- ESC åpner menyen. `fortsett` lukker menyen, og `bytt farge` åpner fargevalg for rød, oransje og gul.
 
 ## Kjente mangler
-- Selve matteappen er ikke implementert ennå.
-- Tailwind er installert og koblet inn, men UI-et bruker fortsatt Vite-malens startstil.
-- Det finnes bare en enkel røyk-test for startappen.
+- Nivåene er foreløpig statiske og har ingen animasjoner.
+- Spillet har ikke støtte for mobil-touch ennå.

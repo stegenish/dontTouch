@@ -1,9 +1,11 @@
-# Matteapp - Project Instructions
+# 2D Spill - Project Instructions
 
 ## Om prosjektet
-En matteapp for barn (Lineus, Lily og Kian) med et lekent design.
-Startsiden ønsker barna velkommen og har en startknapp til oppgavesiden.
-Oppgavesiden lar brukeren justere vanskelighetsgrad og generere matteoppgaver.
+Et 2D hinderløype-spill for barn med et lekent design.
+Spilleren er en rund figur som styres med W, A, S og D.
+Røde firkanter er farlige hindere som sender spilleren tilbake til start.
+Gullfirkanten på andre siden fullfører nivået og åpner for neste nivå.
+ESC åpner en grå, litt gjennomsiktig meny med valg for å fortsette og bytte spillerfarge.
 
 ## Hvem du jobber med
 Den som jobber med dette prosjektet er et barn og trenger derfor litt ekstra assistanse.
