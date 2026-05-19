@@ -20,6 +20,7 @@ Appen er nå et enkelt 2D hinderløype-spill.
 - Berører spilleren en rød firkant, flyttes spilleren tilbake til start og teksten `du klarer dette:)` vises med en restart-knapp.
 - Berører spilleren gullfirkanten, vises teksten `du klarte det!` med knappene `neste` og `restart`.
 - `neste` går til et vanskeligere nivå. Spillet har 25 nivåer og starter på nytt etter nivå 25.
+- Etter seier åpner `restart` en bekreftelse med teksten `er du sikker` og knappene `ja` og `nei`.
 - ESC åpner menyen. `fortsett` lukker menyen, og `bytt farge` åpner fargevalg for rød, oransje og gul.
 
 ## Kjente mangler

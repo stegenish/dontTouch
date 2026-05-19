@@ -73,3 +73,25 @@ test('opens the menu with Escape and lets the player choose a new color', async 
 
   expect(getPlayer()).toHaveStyle({ backgroundColor: '#f97316' })
 })
+
+test('asks if the player is sure before restarting after winning', async () => {
+  const user = userEvent.setup()
+  const firstLevelObstacles = levels[0].obstacles
+  levels[0].obstacles = []
+
+  render(<App />)
+
+  for (let i = 0; i < 43; i += 1) {
+    fireEvent.keyDown(window, { key: 'd' })
+  }
+
+  expect(screen.getByText('du klarte det!')).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'restart' }))
+
+  expect(screen.getByText('er du sikker')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'ja' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'nei' })).toBeInTheDocument()
+
+  levels[0].obstacles = firstLevelObstacles
+})

@@ -53,6 +53,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [menuView, setMenuView] = useState<MenuView>('main')
   const [playerColor, setPlayerColor] = useState(defaultPlayerColor)
+  const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false)
 
   const level = levels[levelIndex]
   const levelLabel = `${level.name} av ${levels.length}`
@@ -70,10 +71,20 @@ function App() {
   function resetLevel() {
     setPosition(startPosition)
     setStatus('playing')
+    setIsRestartConfirmOpen(false)
   }
 
   function goToNextLevel() {
     setLevelIndex((currentLevel) => (currentLevel + 1) % levels.length)
+    resetLevel()
+  }
+
+  function handleRestartClick() {
+    if (status === 'won') {
+      setIsRestartConfirmOpen(true)
+      return
+    }
+
     resetLevel()
   }
 
@@ -172,7 +183,7 @@ function App() {
                   neste
                 </button>
               )}
-              <button type="button" onClick={resetLevel}>
+              <button type="button" onClick={handleRestartClick}>
                 restart
               </button>
             </div>
@@ -218,6 +229,22 @@ function App() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {isRestartConfirmOpen && (
+        <div className="menu-backdrop" role="dialog" aria-modal="true">
+          <div className="menu-card confirm-card">
+            <h2>er du sikker</h2>
+            <div className="message-actions">
+              <button type="button" onClick={resetLevel}>
+                ja
+              </button>
+              <button type="button" onClick={() => setIsRestartConfirmOpen(false)}>
+                nei
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </main>

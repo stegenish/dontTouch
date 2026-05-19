@@ -188,6 +188,14 @@ button:focus-visible {
   text-align: center;
 }
 
+.confirm-card h2 {
+  margin: 0 0 12px;
+  color: #111827;
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-align: center;
+}
+
 .back-button {
   position: absolute;
   right: 16px;
