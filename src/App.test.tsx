@@ -39,6 +39,29 @@ test('shows a timer with decimals while playing', () => {
   jest.useRealTimers()
 })
 
+test('pauses the timer while the menu is open', () => {
+  jest.useFakeTimers()
+  jest.setSystemTime(new Date('2026-05-20T10:00:00.000Z'))
+  render(<App />)
+
+  act(() => {
+    jest.setSystemTime(new Date('2026-05-20T10:00:01.000Z'))
+    jest.advanceTimersByTime(1000)
+  })
+
+  const pausedTimerLabel = screen.getByLabelText(/^tid /).getAttribute('aria-label')
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+
+  act(() => {
+    jest.setSystemTime(new Date('2026-05-20T10:00:06.000Z'))
+    jest.advanceTimersByTime(5000)
+  })
+
+  expect(screen.getByLabelText(pausedTimerLabel ?? '')).toBeInTheDocument()
+  jest.useRealTimers()
+})
+
 test('has 25 playable levels that get more crowded', () => {
   expect(levels).toHaveLength(25)
   expect(levels[0].name).toBe('Nivå 1')

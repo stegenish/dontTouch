@@ -256,6 +256,45 @@ function App() {
     resetLevel()
   }
 
+  const pauseGameTimer = useCallback(() => {
+    if (status !== 'playing') {
+      return
+    }
+
+    setElapsedSeconds((Date.now() - timerStartedAt) / 1000)
+  }, [status, timerStartedAt])
+
+  const resumeGameTimer = useCallback(() => {
+    if (status !== 'playing') {
+      return
+    }
+
+    setTimerStartedAt(Date.now() - elapsedSeconds * 1000)
+  }, [elapsedSeconds, status])
+
+  const openMenu = useCallback(() => {
+    heldKeys.current.clear()
+    pauseGameTimer()
+    setIsMenuOpen(true)
+    setMenuView('main')
+  }, [pauseGameTimer])
+
+  const closeMenu = useCallback(() => {
+    heldKeys.current.clear()
+    resumeGameTimer()
+    setIsMenuOpen(false)
+    setMenuView('main')
+  }, [resumeGameTimer])
+
+  const toggleMenu = useCallback(() => {
+    if (isMenuOpen) {
+      closeMenu()
+      return
+    }
+
+    openMenu()
+  }, [closeMenu, isMenuOpen, openMenu])
+
   function handleRestartClick() {
     if (status === 'won') {
       setIsRestartConfirmOpen(true)
@@ -319,9 +358,7 @@ function App() {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        heldKeys.current.clear()
-        setIsMenuOpen((open) => !open)
-        setMenuView('main')
+        toggleMenu()
         return
       }
 
@@ -346,7 +383,7 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [movePlayer])
+  }, [movePlayer, toggleMenu])
 
   useEffect(() => {
     const movementTimer = window.setInterval(() => {
@@ -376,7 +413,7 @@ function App() {
   }, [movePlayer])
 
   useEffect(() => {
-    if (status !== 'playing') {
+    if (status !== 'playing' || isMenuOpen) {
       return undefined
     }
 
@@ -385,7 +422,7 @@ function App() {
     }, 100)
 
     return () => window.clearInterval(timer)
-  }, [status, timerStartedAt])
+  }, [isMenuOpen, status, timerStartedAt])
 
   return (
     <main className={`game-shell${showShadows ? '' : ' no-shadows'}`}>
@@ -450,7 +487,7 @@ function App() {
         <div className="menu-backdrop" role="dialog" aria-modal="true">
           {menuView === 'main' ? (
             <div className="menu-card">
-              <button type="button" onClick={() => setIsMenuOpen(false)}>
+              <button type="button" onClick={closeMenu}>
                 {copy.continue}
               </button>
               <button type="button" onClick={() => setMenuView('colors')}>
