@@ -18,9 +18,18 @@ type ColorChoice = {
   unlockLevel?: number
 }
 
+type SavedGame = {
+  highestUnlockedLevel: number
+  language: Language
+  levelIndex: number
+  playerColor: string
+  showShadows: boolean
+}
+
 const playerRadius = 16
 const moveStep = 18
 const heldKeyMoveDelay = 55
+const saveKey = 'dont-touch-the-red-save'
 const startPosition: Point = { x: 48, y: 260 }
 const goal: Rect = { x: 820, y: 220, width: 52, height: 82 }
 const keyMoves: Record<string, Point> = {
@@ -75,6 +84,8 @@ const text = {
     obstacle: 'Rød firkant',
     player: 'Spiller',
     restart: 'restart',
+    save: 'lagre',
+    saved: 'lagret!',
     selectLanguage: 'Velg språk',
     selectColor: 'Velg',
     settings: 'instillinger',
@@ -110,6 +121,8 @@ const text = {
     obstacle: 'Red square',
     player: 'Player',
     restart: 'restart',
+    save: 'save',
+    saved: 'saved!',
     selectLanguage: 'Choose language',
     selectColor: 'Choose',
     settings: 'settings',
@@ -145,6 +158,8 @@ const text = {
     obstacle: 'Rotes Quadrat',
     player: 'Spieler',
     restart: 'restart',
+    save: 'speichern',
+    saved: 'gespeichert!',
     selectLanguage: 'Sprache wählen',
     selectColor: 'Wähle',
     settings: 'einstellungen',
@@ -171,6 +186,48 @@ const languageChoices = [
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
+}
+
+function isLanguage(value: unknown): value is Language {
+  return value === 'nb' || value === 'en' || value === 'de'
+}
+
+function isPlayerColor(value: unknown): value is string {
+  return typeof value === 'string' && colorChoices.some((color) => color.value === value)
+}
+
+function readSavedGame(): SavedGame | undefined {
+  try {
+    const savedText = localStorage.getItem(saveKey)
+
+    if (!savedText) {
+      return undefined
+    }
+
+    const saved = JSON.parse(savedText) as Partial<SavedGame>
+    const highestUnlockedLevel = clamp(
+      Number(saved.highestUnlockedLevel) || 1,
+      1,
+      levels.length,
+    )
+    const levelIndex = clamp(Number(saved.levelIndex) || 0, 0, highestUnlockedLevel - 1)
+
+    return {
+      highestUnlockedLevel,
+      language: isLanguage(saved.language) ? saved.language : 'nb',
+      levelIndex,
+      playerColor: isPlayerColor(saved.playerColor)
+        ? saved.playerColor
+        : defaultPlayerColor,
+      showShadows: typeof saved.showShadows === 'boolean' ? saved.showShadows : true,
+    }
+  } catch {
+    return undefined
+  }
+}
+
+function saveGame(savedGame: SavedGame) {
+  localStorage.setItem(saveKey, JSON.stringify(savedGame))
 }
 
 function circleTouchesRect(circle: Point, radius: number, rect: Rect) {
@@ -202,19 +259,23 @@ function rectStyle(rect: Rect) {
 }
 
 function App() {
-  const [levelIndex, setLevelIndex] = useState(0)
+  const savedGame = useMemo(() => readSavedGame(), [])
+  const [levelIndex, setLevelIndex] = useState(savedGame?.levelIndex ?? 0)
   const [position, setPosition] = useState(startPosition)
   const [status, setStatus] = useState<GameStatus>('playing')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [menuView, setMenuView] = useState<MenuView>('main')
-  const [playerColor, setPlayerColor] = useState(defaultPlayerColor)
+  const [playerColor, setPlayerColor] = useState(savedGame?.playerColor ?? defaultPlayerColor)
   const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false)
-  const [language, setLanguage] = useState<Language>('nb')
-  const [showShadows, setShowShadows] = useState(true)
+  const [language, setLanguage] = useState<Language>(savedGame?.language ?? 'nb')
+  const [showShadows, setShowShadows] = useState(savedGame?.showShadows ?? true)
   const [isMusicOn, setIsMusicOn] = useState(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [timerStartedAt, setTimerStartedAt] = useState(() => Date.now())
-  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(1)
+  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(
+    savedGame?.highestUnlockedLevel ?? 1,
+  )
+  const [showSavedMessage, setShowSavedMessage] = useState(false)
   const heldKeys = useRef(new Set<string>())
   const musicRef = useRef<HTMLAudioElement>(null)
 
@@ -261,6 +322,17 @@ function App() {
     setIsMenuOpen(false)
     setMenuView('main')
     resetLevel()
+  }
+
+  function saveCurrentGame() {
+    saveGame({
+      highestUnlockedLevel,
+      language,
+      levelIndex,
+      playerColor,
+      showShadows,
+    })
+    setShowSavedMessage(true)
   }
 
   const pauseGameTimer = useCallback(() => {
@@ -446,6 +518,28 @@ function App() {
     return () => window.clearInterval(timer)
   }, [isMenuOpen, status, timerStartedAt])
 
+  useEffect(() => {
+    saveGame({
+      highestUnlockedLevel,
+      language,
+      levelIndex,
+      playerColor,
+      showShadows,
+    })
+  }, [highestUnlockedLevel, language, levelIndex, playerColor, showShadows])
+
+  useEffect(() => {
+    if (!showSavedMessage) {
+      return undefined
+    }
+
+    const messageTimer = window.setTimeout(() => {
+      setShowSavedMessage(false)
+    }, 1800)
+
+    return () => window.clearTimeout(messageTimer)
+  }, [showSavedMessage])
+
   return (
     <main className={`game-shell${showShadows ? '' : ' no-shadows'}`}>
       <audio ref={musicRef} loop preload="auto" src="/gvidon-gvidon-medicine-364031.mp3" />
@@ -549,6 +643,10 @@ function App() {
               <button type="button" onClick={() => setMenuView('settings')}>
                 {copy.settings}
               </button>
+              <button type="button" onClick={saveCurrentGame}>
+                {copy.save}
+              </button>
+              {showSavedMessage ? <p className="saved-message">{copy.saved}</p> : null}
             </div>
           ) : menuView === 'colors' ? (
             <div className="menu-card color-menu">

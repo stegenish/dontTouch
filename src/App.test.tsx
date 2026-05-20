@@ -12,6 +12,10 @@ function pressKey(key: string) {
   fireEvent.keyUp(window, { key })
 }
 
+beforeEach(() => {
+  localStorage.clear()
+})
+
 test('shows the 2D game with a light blue player and a gold goal', () => {
   render(<App />)
 
@@ -142,6 +146,34 @@ test('opens the menu with Escape and lets the player choose a new color', async 
   await user.click(screen.getByRole('button', { name: 'bytt farge' }))
   await user.click(screen.getByRole('button', { name: 'Velg Oransje' }))
 
+  expect(getPlayer()).toHaveStyle({ background: '#f97316' })
+})
+
+test('saves progress and loads it next time the game opens', async () => {
+  const user = userEvent.setup()
+  const firstLevelObstacles = levels[0].obstacles
+  levels[0].obstacles = []
+
+  const { unmount } = render(<App />)
+
+  for (let i = 0; i < 43; i += 1) {
+    pressKey('d')
+  }
+
+  await user.click(screen.getByRole('button', { name: 'neste' }))
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'bytt farge' }))
+  await user.click(screen.getByRole('button', { name: 'Velg Oransje' }))
+  await user.click(screen.getByRole('button', { name: 'tilbake' }))
+  await user.click(screen.getByRole('button', { name: 'lagre' }))
+
+  expect(screen.getByText('lagret!')).toBeInTheDocument()
+
+  unmount()
+  levels[0].obstacles = firstLevelObstacles
+  render(<App />)
+
+  expect(screen.getByText('Nivå 2 av 25')).toBeInTheDocument()
   expect(getPlayer()).toHaveStyle({ background: '#f97316' })
 })
 
