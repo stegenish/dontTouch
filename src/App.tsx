@@ -72,6 +72,9 @@ const text = {
     shadows: 'skygger',
     shadowsOff: 'av',
     shadowsOn: 'på',
+    music: 'musikk',
+    musicOff: 'av',
+    musicOn: 'på',
     sure: 'er du sikker',
     unlockRainbow: 'nå nivå 10',
     win: 'du klarte det!',
@@ -100,6 +103,9 @@ const text = {
     shadows: 'shadows',
     shadowsOff: 'off',
     shadowsOn: 'on',
+    music: 'music',
+    musicOff: 'off',
+    musicOn: 'on',
     sure: 'are you sure',
     unlockRainbow: 'reach level 10',
     win: 'you did it!',
@@ -128,6 +134,9 @@ const text = {
     shadows: 'schatten',
     shadowsOff: 'aus',
     shadowsOn: 'an',
+    music: 'musik',
+    musicOff: 'aus',
+    musicOn: 'an',
     sure: 'bist du sicher',
     unlockRainbow: 'erreiche Level 10',
     win: 'du hast es geschafft!',
@@ -183,7 +192,9 @@ function App() {
   const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false)
   const [language, setLanguage] = useState<Language>('nb')
   const [showShadows, setShowShadows] = useState(true)
+  const [isMusicOn, setIsMusicOn] = useState(false)
   const heldKeys = useRef(new Set<string>())
+  const musicRef = useRef<HTMLAudioElement>(null)
 
   const copy = text[language]
   const level = levels[levelIndex]
@@ -220,6 +231,28 @@ function App() {
     }
 
     resetLevel()
+  }
+
+  function setMusic(shouldPlay: boolean) {
+    const music = musicRef.current
+    setIsMusicOn(shouldPlay)
+
+    if (!music) {
+      return
+    }
+
+    if (shouldPlay) {
+      try {
+        const playPromise = music.play()
+        playPromise?.catch(() => setIsMusicOn(false))
+      } catch {
+        setIsMusicOn(false)
+      }
+      return
+    }
+
+    music.pause()
+    music.currentTime = 0
   }
 
   const movePlayer = useCallback((delta: Point) => {
@@ -312,6 +345,7 @@ function App() {
 
   return (
     <main className={`game-shell${showShadows ? '' : ' no-shadows'}`}>
+      <audio ref={musicRef} loop preload="auto" src="/gvidon-gvidon-medicine-364031.mp3" />
       <section className="game-header" aria-labelledby="game-title">
         <div>
           <p className="eyebrow">2D hinderløype</p>
@@ -468,6 +502,27 @@ function App() {
                     onClick={() => setShowShadows(true)}
                   >
                     {copy.shadowsOn}
+                  </button>
+                </div>
+              </div>
+              <div className="settings-row">
+                <span>{copy.music}</span>
+                <div className="toggle-buttons">
+                  <button
+                    aria-pressed={!isMusicOn}
+                    className={!isMusicOn ? 'selected-toggle' : ''}
+                    type="button"
+                    onClick={() => setMusic(false)}
+                  >
+                    {copy.musicOff}
+                  </button>
+                  <button
+                    aria-pressed={isMusicOn}
+                    className={isMusicOn ? 'selected-toggle' : ''}
+                    type="button"
+                    onClick={() => setMusic(true)}
+                  >
+                    {copy.musicOn}
                   </button>
                 </div>
               </div>

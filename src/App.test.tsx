@@ -164,13 +164,39 @@ test('opens settings and toggles shadows off and on', async () => {
   expect(screen.getByRole('heading', { name: 'instillinger' })).toBeInTheDocument()
   expect(screen.getByText('skygger')).toBeInTheDocument()
 
-  await user.click(screen.getByRole('button', { name: 'av' }))
+  await user.click(screen.getAllByRole('button', { name: 'av' })[0])
   expect(screen.getByRole('main')).toHaveClass('no-shadows')
-  expect(screen.getByRole('button', { name: 'av' })).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getAllByRole('button', { name: 'av' })[0]).toHaveAttribute('aria-pressed', 'true')
 
-  await user.click(screen.getByRole('button', { name: 'på' }))
+  await user.click(screen.getAllByRole('button', { name: 'på' })[0])
   expect(screen.getByRole('main')).not.toHaveClass('no-shadows')
-  expect(screen.getByRole('button', { name: 'på' })).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getAllByRole('button', { name: 'på' })[0]).toHaveAttribute('aria-pressed', 'true')
+})
+
+test('opens settings and toggles music on and off', async () => {
+  const user = userEvent.setup()
+  jest.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
+  jest.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined)
+
+  render(<App />)
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'instillinger' }))
+
+  expect(screen.getByText('musikk')).toBeInTheDocument()
+
+  const offButtons = screen.getAllByRole('button', { name: 'av' })
+  const onButtons = screen.getAllByRole('button', { name: 'på' })
+
+  expect(offButtons[1]).toHaveAttribute('aria-pressed', 'true')
+
+  await user.click(onButtons[1])
+  expect(onButtons[1]).toHaveAttribute('aria-pressed', 'true')
+
+  await user.click(offButtons[1])
+  expect(offButtons[1]).toHaveAttribute('aria-pressed', 'true')
+
+  jest.restoreAllMocks()
 })
 
 test('asks if the player is sure before restarting after winning', async () => {

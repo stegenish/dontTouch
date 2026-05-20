@@ -76,7 +76,7 @@
   background: #ef4444;
   border: 0;
   border-radius: 2px;
-  box-shadow: none;
+  box-shadow: 7px 7px 0 rgba(153, 27, 27, 0.35);
 }
 
 .goal {
@@ -288,6 +288,7 @@ button:focus-visible {
 
 .no-shadows .game-board,
 .no-shadows .player,
+.no-shadows .obstacle,
 .no-shadows .goal,
 .no-shadows .message-panel,
 .no-shadows .menu-card,
