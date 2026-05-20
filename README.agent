@@ -17,6 +17,7 @@ Appen er nå et enkelt 2D hinderløype-spill.
 ## Spillregler
 - Spilleren starter som en lyseblå runding.
 - W går opp, A går venstre, S går ned og D går høyre. Spilleren flytter seg med en gang når tasten trykkes, og fortsetter å bevege seg mens tasten holdes inne.
+- På telefon og andre touch-skjermer vises fire store piltaster under brettet. De flytter spilleren med en gang når man trykker, og fortsetter mens knappen holdes inne.
 - En timer øverst på skjermen viser tiden med ett desimal.
 - Berører spilleren en rød firkant, flyttes spilleren tilbake til start og teksten `du klarer dette:)` vises med en restart-knapp.
 - Berører spilleren gullfirkanten, vises teksten `du klarte det!` med knappene `neste` og `restart`.
@@ -32,4 +33,3 @@ Appen er nå et enkelt 2D hinderløype-spill.
 
 ## Kjente mangler
 - Nivåene er foreløpig statiske og har ingen animasjoner.
-- Spillet har ikke støtte for mobil-touch ennå.

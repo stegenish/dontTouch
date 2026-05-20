@@ -175,6 +175,47 @@ button:focus-visible {
   text-align: center;
 }
 
+.touch-controls {
+  display: none;
+  grid-template-areas:
+    ". up ."
+    "left down right";
+  grid-template-columns: repeat(3, 72px);
+  gap: 10px;
+  justify-content: center;
+  width: min(900px, 100%);
+  margin: 18px auto 0;
+  touch-action: none;
+  user-select: none;
+}
+
+.touch-control {
+  width: 72px;
+  height: 72px;
+  min-height: 72px;
+  padding: 0;
+  background: #dbeafe;
+  color: #0f172a;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.touch-control-up {
+  grid-area: up;
+}
+
+.touch-control-left {
+  grid-area: left;
+}
+
+.touch-control-down {
+  grid-area: down;
+}
+
+.touch-control-right {
+  grid-area: right;
+}
+
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -400,6 +441,14 @@ button:focus-visible {
     max-height: none;
   }
 
+  .controls-hint {
+    margin-top: 18px;
+  }
+
+  .touch-controls {
+    display: grid;
+  }
+
   .message-actions {
     flex-direction: column;
   }
@@ -419,5 +468,11 @@ button:focus-visible {
 
   .levels-grid {
     grid-template-columns: repeat(3, minmax(72px, 1fr));
+  }
+}
+
+@media (pointer: coarse) {
+  .touch-controls {
+    display: grid;
   }
 }

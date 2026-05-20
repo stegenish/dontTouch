@@ -87,6 +87,17 @@ test('moves the player with WASD keys', () => {
   expect(getPlayer()).toHaveStyle({ top: '53.46153846153846%' })
 })
 
+test('moves the player with on-screen controls for phones', () => {
+  render(<App />)
+
+  expect(screen.getByText('Bruk W, A, S og D eller knappene for å bevege deg. ESC åpner menyen.')).toBeInTheDocument()
+
+  fireEvent.pointerDown(screen.getByRole('button', { name: 'høyre' }))
+  fireEvent.pointerUp(screen.getByRole('button', { name: 'høyre' }))
+
+  expect(getPlayer()).toHaveStyle({ left: '7.333333333333333%' })
+})
+
 test('keeps moving right while D is held down', () => {
   jest.useFakeTimers()
   render(<App />)

@@ -30,6 +30,13 @@ const keyMoves: Record<string, Point> = {
   d: { x: moveStep, y: 0 },
 }
 
+const touchControls = [
+  { key: 'w', label: 'opp', symbol: '↑', area: 'up' },
+  { key: 'a', label: 'venstre', symbol: '←', area: 'left' },
+  { key: 's', label: 'ned', symbol: '↓', area: 'down' },
+  { key: 'd', label: 'høyre', symbol: '→', area: 'right' },
+]
+
 const colorChoices = [
   { name: 'Rød', value: '#ef4444' },
   { name: 'Oransje', value: '#f97316' },
@@ -56,7 +63,7 @@ const text = {
     colorHeading: 'bytt farge',
     continue: 'fortsett',
     crash: 'du klarer dette:)',
-    controls: 'Bruk W, A, S og D for å bevege deg. ESC åpner menyen.',
+    controls: 'Bruk W, A, S og D eller knappene for å bevege deg. ESC åpner menyen.',
     gameTitle: 'Dont touch the red',
     languageHeading: 'bytt språk',
     levelOf: 'av',
@@ -91,7 +98,7 @@ const text = {
     colorHeading: 'change color',
     continue: 'continue',
     crash: 'you can do this :)',
-    controls: 'Use W, A, S and D to move. ESC opens the menu.',
+    controls: 'Use W, A, S, D or the buttons to move. ESC opens the menu.',
     gameTitle: 'Dont touch the red',
     languageHeading: 'change language',
     levelOf: 'of',
@@ -126,7 +133,7 @@ const text = {
     colorHeading: 'farbe wechseln',
     continue: 'weiter',
     crash: 'du schaffst das :)',
-    controls: 'Benutze W, A, S und D zum Bewegen. ESC öffnet das Menü.',
+    controls: 'Benutze W, A, S, D oder die Knöpfe zum Bewegen. ESC öffnet das Menü.',
     gameTitle: 'Dont touch the red',
     languageHeading: 'sprache wechseln',
     levelOf: 'von',
@@ -355,6 +362,24 @@ function App() {
     }
   }, [isMenuOpen, level.obstacles, position.x, position.y, status])
 
+  const startMoving = useCallback((key: string) => {
+    const move = keyMoves[key]
+
+    if (!move) {
+      return
+    }
+
+    if (!heldKeys.current.has(key)) {
+      movePlayer(move)
+    }
+
+    heldKeys.current.add(key)
+  }, [movePlayer])
+
+  const stopMoving = useCallback((key: string) => {
+    heldKeys.current.delete(key)
+  }, [])
+
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -366,15 +391,12 @@ function App() {
       const move = keyMoves[key]
       if (move) {
         event.preventDefault()
-        if (!heldKeys.current.has(key)) {
-          movePlayer(move)
-        }
-        heldKeys.current.add(key)
+        startMoving(key)
       }
     }
 
     function handleKeyUp(event: KeyboardEvent) {
-      heldKeys.current.delete(event.key.toLowerCase())
+      stopMoving(event.key.toLowerCase())
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -383,7 +405,7 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [movePlayer, toggleMenu])
+  }, [startMoving, stopMoving, toggleMenu])
 
   useEffect(() => {
     const movementTimer = window.setInterval(() => {
@@ -482,6 +504,31 @@ function App() {
       </section>
 
       <p className="controls-hint">{copy.controls}</p>
+
+      <div className="touch-controls" aria-label="Mobilkontroller">
+        {touchControls.map((control) => (
+          <button
+            aria-label={control.label}
+            className={`touch-control touch-control-${control.area}`}
+            key={control.key}
+            onContextMenu={(event) => event.preventDefault()}
+            onPointerCancel={() => stopMoving(control.key)}
+            onPointerDown={(event) => {
+              event.preventDefault()
+              event.currentTarget.setPointerCapture?.(event.pointerId)
+              startMoving(control.key)
+            }}
+            onPointerLeave={() => stopMoving(control.key)}
+            onPointerUp={(event) => {
+              event.preventDefault()
+              stopMoving(control.key)
+            }}
+            type="button"
+          >
+            {control.symbol}
+          </button>
+        ))}
+      </div>
 
       {isMenuOpen && (
         <div className="menu-backdrop" role="dialog" aria-modal="true">
