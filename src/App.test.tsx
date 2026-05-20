@@ -17,11 +17,26 @@ test('shows the 2D game with a light blue player and a gold goal', () => {
 
   expect(screen.getByRole('heading', { name: 'Dont touch the red' })).toBeInTheDocument()
   expect(screen.getByText('Nivå 1 av 25')).toBeInTheDocument()
+  expect(screen.getByLabelText('tid 0.0 s')).toBeInTheDocument()
   expect(screen.getByLabelText('Spiller')).toHaveStyle({ backgroundColor: '#7dd3fc' })
   expect(screen.getByLabelText('Gull firkant')).toHaveStyle({
     left: '91.11111111111111%',
     top: '42.30769230769231%',
   })
+})
+
+test('shows a timer with decimals while playing', () => {
+  jest.useFakeTimers()
+  jest.setSystemTime(new Date('2026-05-20T10:00:00.000Z'))
+  render(<App />)
+
+  act(() => {
+    jest.setSystemTime(new Date('2026-05-20T10:00:01.200Z'))
+    jest.advanceTimersByTime(1200)
+  })
+
+  expect(screen.getByLabelText('tid 2.4 s')).toBeInTheDocument()
+  jest.useRealTimers()
 })
 
 test('has 25 playable levels that get more crowded', () => {

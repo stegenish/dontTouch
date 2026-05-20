@@ -31,12 +31,35 @@
   font-weight: 900;
 }
 
-.level-badge {
+.status-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.level-badge,
+.timer-badge {
   border: 2px solid #111827;
   border-radius: 8px;
   background: #ffffff;
   padding: 10px 14px;
   font-weight: 900;
+}
+
+.timer-badge {
+  display: grid;
+  min-width: 92px;
+  padding-block: 7px;
+  text-align: center;
+}
+
+.timer-badge span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.timer-badge strong {
+  font-size: 1.1rem;
 }
 
 .game-board {
@@ -304,6 +327,11 @@ button:focus-visible {
   .game-header {
     align-items: start;
     flex-direction: column;
+  }
+
+  .status-badges {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .game-board {

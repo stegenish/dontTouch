@@ -75,6 +75,7 @@ const text = {
     music: 'musikk',
     musicOff: 'av',
     musicOn: 'på',
+    timer: 'tid',
     sure: 'er du sikker',
     unlockRainbow: 'nå nivå 10',
     win: 'du klarte det!',
@@ -106,6 +107,7 @@ const text = {
     music: 'music',
     musicOff: 'off',
     musicOn: 'on',
+    timer: 'time',
     sure: 'are you sure',
     unlockRainbow: 'reach level 10',
     win: 'you did it!',
@@ -137,6 +139,7 @@ const text = {
     music: 'musik',
     musicOff: 'aus',
     musicOn: 'an',
+    timer: 'zeit',
     sure: 'bist du sicher',
     unlockRainbow: 'erreiche Level 10',
     win: 'du hast es geschafft!',
@@ -193,6 +196,8 @@ function App() {
   const [language, setLanguage] = useState<Language>('nb')
   const [showShadows, setShowShadows] = useState(true)
   const [isMusicOn, setIsMusicOn] = useState(false)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [timerStartedAt, setTimerStartedAt] = useState(() => Date.now())
   const heldKeys = useRef(new Set<string>())
   const musicRef = useRef<HTMLAudioElement>(null)
 
@@ -201,6 +206,7 @@ function App() {
   const levelNumber = levelIndex + 1
   const hasRainbow = levelNumber >= 10
   const levelLabel = `Nivå ${levelNumber} ${copy.levelOf} ${levels.length}`
+  const timerLabel = `${elapsedSeconds.toFixed(1)} s`
 
   const playerStyle = useMemo(
     () => ({
@@ -214,6 +220,8 @@ function App() {
 
   function resetLevel() {
     heldKeys.current.clear()
+    setTimerStartedAt(Date.now())
+    setElapsedSeconds(0)
     setPosition(startPosition)
     setStatus('playing')
     setIsRestartConfirmOpen(false)
@@ -343,6 +351,18 @@ function App() {
     return () => window.clearInterval(movementTimer)
   }, [movePlayer])
 
+  useEffect(() => {
+    if (status !== 'playing') {
+      return undefined
+    }
+
+    const timer = window.setInterval(() => {
+      setElapsedSeconds((Date.now() - timerStartedAt) / 1000)
+    }, 100)
+
+    return () => window.clearInterval(timer)
+  }, [status, timerStartedAt])
+
   return (
     <main className={`game-shell${showShadows ? '' : ' no-shadows'}`}>
       <audio ref={musicRef} loop preload="auto" src="/gvidon-gvidon-medicine-364031.mp3" />
@@ -351,7 +371,13 @@ function App() {
           <p className="eyebrow">2D hinderløype</p>
           <h1 id="game-title">{copy.gameTitle}</h1>
         </div>
-        <div className="level-badge">{levelLabel}</div>
+        <div className="status-badges">
+          <div className="timer-badge" aria-label={`${copy.timer} ${timerLabel}`}>
+            <span>{copy.timer}</span>
+            <strong>{timerLabel}</strong>
+          </div>
+          <div className="level-badge">{levelLabel}</div>
+        </div>
       </section>
 
       <section
