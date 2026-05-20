@@ -24,6 +24,7 @@ Appen er nå et enkelt 2D hinderløype-spill.
 - ESC åpner menyen. `fortsett` lukker menyen, og `bytt farge` åpner fargevalg for rød, oransje og gul.
 - Fargemenyen har også lys lilla, lyseblå, rosa, blå og regnbue. Regnbue er låst frem til nivå 10.
 - Hovedmenyen har `bytt språk`, med norsk bokmål, engelsk og tysk.
+- Hovedmenyen har `instillinger`, med valget `skygger` og knappene `av` og `på`.
 
 ## Kjente mangler
 - Nivåene er foreløpig statiske og har ingen animasjoner.

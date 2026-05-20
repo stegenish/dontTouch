@@ -186,6 +186,42 @@ button:focus-visible {
   text-align: center;
 }
 
+.settings-menu {
+  min-height: 180px;
+  padding-top: 60px;
+}
+
+.settings-menu h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+  color: #111827;
+  font-weight: 900;
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-buttons button {
+  min-width: 64px;
+}
+
+.selected-toggle {
+  background: #bbf7d0;
+}
+
 .confirm-card h2 {
   margin: 0 0 12px;
   color: #111827;
@@ -250,6 +286,15 @@ button:focus-visible {
   margin-top: 20px;
 }
 
+.no-shadows .game-board,
+.no-shadows .player,
+.no-shadows .goal,
+.no-shadows .message-panel,
+.no-shadows .menu-card,
+.no-shadows button {
+  box-shadow: none;
+}
+
 @media (max-width: 640px) {
   .game-shell {
     padding: 18px 12px;
@@ -265,6 +310,11 @@ button:focus-visible {
   }
 
   .message-actions {
+    flex-direction: column;
+  }
+
+  .settings-row {
+    align-items: stretch;
     flex-direction: column;
   }
 

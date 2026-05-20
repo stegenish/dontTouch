@@ -154,6 +154,25 @@ test('can switch the menu language to English', async () => {
   expect(screen.getByRole('button', { name: 'back' })).toBeInTheDocument()
 })
 
+test('opens settings and toggles shadows off and on', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'instillinger' }))
+
+  expect(screen.getByRole('heading', { name: 'instillinger' })).toBeInTheDocument()
+  expect(screen.getByText('skygger')).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'av' }))
+  expect(screen.getByRole('main')).toHaveClass('no-shadows')
+  expect(screen.getByRole('button', { name: 'av' })).toHaveAttribute('aria-pressed', 'true')
+
+  await user.click(screen.getByRole('button', { name: 'på' }))
+  expect(screen.getByRole('main')).not.toHaveClass('no-shadows')
+  expect(screen.getByRole('button', { name: 'på' })).toHaveAttribute('aria-pressed', 'true')
+})
+
 test('asks if the player is sure before restarting after winning', async () => {
   const user = userEvent.setup()
   const firstLevelObstacles = levels[0].obstacles

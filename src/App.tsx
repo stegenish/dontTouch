@@ -8,7 +8,7 @@ type Point = {
 }
 
 type GameStatus = 'playing' | 'crashed' | 'won'
-type MenuView = 'main' | 'colors' | 'language'
+type MenuView = 'main' | 'colors' | 'language' | 'settings'
 type Language = 'nb' | 'en' | 'de'
 
 type ColorChoice = {
@@ -67,6 +67,11 @@ const text = {
     restart: 'restart',
     selectLanguage: 'Velg språk',
     selectColor: 'Velg',
+    settings: 'instillinger',
+    settingsHeading: 'instillinger',
+    shadows: 'skygger',
+    shadowsOff: 'av',
+    shadowsOn: 'på',
     sure: 'er du sikker',
     unlockRainbow: 'nå nivå 10',
     win: 'du klarte det!',
@@ -90,6 +95,11 @@ const text = {
     restart: 'restart',
     selectLanguage: 'Choose language',
     selectColor: 'Choose',
+    settings: 'settings',
+    settingsHeading: 'settings',
+    shadows: 'shadows',
+    shadowsOff: 'off',
+    shadowsOn: 'on',
     sure: 'are you sure',
     unlockRainbow: 'reach level 10',
     win: 'you did it!',
@@ -113,6 +123,11 @@ const text = {
     restart: 'restart',
     selectLanguage: 'Sprache wählen',
     selectColor: 'Wähle',
+    settings: 'einstellungen',
+    settingsHeading: 'einstellungen',
+    shadows: 'schatten',
+    shadowsOff: 'aus',
+    shadowsOn: 'an',
     sure: 'bist du sicher',
     unlockRainbow: 'erreiche Level 10',
     win: 'du hast es geschafft!',
@@ -167,6 +182,7 @@ function App() {
   const [playerColor, setPlayerColor] = useState(defaultPlayerColor)
   const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false)
   const [language, setLanguage] = useState<Language>('nb')
+  const [showShadows, setShowShadows] = useState(true)
   const heldKeys = useRef(new Set<string>())
 
   const copy = text[language]
@@ -295,7 +311,7 @@ function App() {
   }, [movePlayer])
 
   return (
-    <main className="game-shell">
+    <main className={`game-shell${showShadows ? '' : ' no-shadows'}`}>
       <section className="game-header" aria-labelledby="game-title">
         <div>
           <p className="eyebrow">2D hinderløype</p>
@@ -359,6 +375,9 @@ function App() {
               <button type="button" onClick={() => setMenuView('language')}>
                 {copy.changeLanguage}
               </button>
+              <button type="button" onClick={() => setMenuView('settings')}>
+                {copy.settings}
+              </button>
             </div>
           ) : menuView === 'colors' ? (
             <div className="menu-card color-menu">
@@ -396,7 +415,7 @@ function App() {
                 })}
               </div>
             </div>
-          ) : (
+          ) : menuView === 'language' ? (
             <div className="menu-card color-menu">
               <button
                 aria-label={copy.back}
@@ -418,6 +437,39 @@ function App() {
                     {choice.label}
                   </button>
                 ))}
+              </div>
+            </div>
+          ) : (
+            <div className="menu-card settings-menu">
+              <button
+                aria-label={copy.back}
+                className="back-button"
+                type="button"
+                onClick={() => setMenuView('main')}
+              >
+                {copy.back}
+              </button>
+              <h2>{copy.settingsHeading}</h2>
+              <div className="settings-row">
+                <span>{copy.shadows}</span>
+                <div className="toggle-buttons">
+                  <button
+                    aria-pressed={!showShadows}
+                    className={!showShadows ? 'selected-toggle' : ''}
+                    type="button"
+                    onClick={() => setShowShadows(false)}
+                  >
+                    {copy.shadowsOff}
+                  </button>
+                  <button
+                    aria-pressed={showShadows}
+                    className={showShadows ? 'selected-toggle' : ''}
+                    type="button"
+                    onClick={() => setShowShadows(true)}
+                  >
+                    {copy.shadowsOn}
+                  </button>
+                </div>
               </div>
             </div>
           )}
