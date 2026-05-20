@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { board, levels, type Rect } from './levels'
 import './App.css'
 
@@ -20,8 +20,15 @@ type ColorChoice = {
 
 const playerRadius = 16
 const moveStep = 18
+const heldKeyMoveDelay = 55
 const startPosition: Point = { x: 48, y: 260 }
 const goal: Rect = { x: 820, y: 220, width: 52, height: 82 }
+const keyMoves: Record<string, Point> = {
+  w: { x: 0, y: -moveStep },
+  a: { x: -moveStep, y: 0 },
+  s: { x: 0, y: moveStep },
+  d: { x: moveStep, y: 0 },
+}
 
 const colorChoices = [
   { name: 'Rød', value: '#ef4444' },
@@ -160,6 +167,7 @@ function App() {
   const [playerColor, setPlayerColor] = useState(defaultPlayerColor)
   const [isRestartConfirmOpen, setIsRestartConfirmOpen] = useState(false)
   const [language, setLanguage] = useState<Language>('nb')
+  const heldKeys = useRef(new Set<string>())
 
   const copy = text[language]
   const level = levels[levelIndex]
@@ -178,6 +186,7 @@ function App() {
   )
 
   function resetLevel() {
+    heldKeys.current.clear()
     setPosition(startPosition)
     setStatus('playing')
     setIsRestartConfirmOpen(false)
@@ -212,6 +221,7 @@ function App() {
         pointTouchesRect(nextPosition, obstacle),
       )
     ) {
+      heldKeys.current.clear()
       setPosition(startPosition)
       setStatus('crashed')
       return
@@ -220,34 +230,68 @@ function App() {
     setPosition(nextPosition)
 
     if (circleTouchesRect(nextPosition, playerRadius, goal)) {
+      heldKeys.current.clear()
       setStatus('won')
     }
   }, [isMenuOpen, level.obstacles, position.x, position.y, status])
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      const keyMoves: Record<string, Point> = {
-        w: { x: 0, y: -moveStep },
-        a: { x: -moveStep, y: 0 },
-        s: { x: 0, y: moveStep },
-        d: { x: moveStep, y: 0 },
-      }
-
       if (event.key === 'Escape') {
+        heldKeys.current.clear()
         setIsMenuOpen((open) => !open)
         setMenuView('main')
         return
       }
 
-      const move = keyMoves[event.key.toLowerCase()]
+      const key = event.key.toLowerCase()
+      const move = keyMoves[key]
       if (move) {
         event.preventDefault()
-        movePlayer(move)
+        if (!heldKeys.current.has(key)) {
+          movePlayer(move)
+        }
+        heldKeys.current.add(key)
       }
     }
 
+    function handleKeyUp(event: KeyboardEvent) {
+      heldKeys.current.delete(event.key.toLowerCase())
+    }
+
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [movePlayer])
+
+  useEffect(() => {
+    const movementTimer = window.setInterval(() => {
+      const heldMoves = [...heldKeys.current]
+        .map((key) => keyMoves[key])
+        .filter(Boolean)
+
+      if (heldMoves.length === 0) {
+        return
+      }
+
+      movePlayer({
+        x: clamp(
+          heldMoves.reduce((sum, move) => sum + move.x, 0),
+          -moveStep,
+          moveStep,
+        ),
+        y: clamp(
+          heldMoves.reduce((sum, move) => sum + move.y, 0),
+          -moveStep,
+          moveStep,
+        ),
+      })
+    }, heldKeyMoveDelay)
+
+    return () => window.clearInterval(movementTimer)
   }, [movePlayer])
 
   return (

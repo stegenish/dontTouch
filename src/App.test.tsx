@@ -1,10 +1,15 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import { levels } from './levels'
 
 function getPlayer() {
   return screen.getByTestId('player')
+}
+
+function pressKey(key: string) {
+  fireEvent.keyDown(window, { key })
+  fireEvent.keyUp(window, { key })
 }
 
 test('shows the 2D game with a light blue player and a gold goal', () => {
@@ -37,18 +42,35 @@ test('keeps red obstacle hitboxes aligned with the visible rectangles', () => {
 test('moves the player with WASD keys', () => {
   render(<App />)
 
+  pressKey('d')
+  expect(getPlayer()).toHaveStyle({ left: '7.333333333333333%' })
+
+  pressKey('s')
+  expect(getPlayer()).toHaveStyle({ top: '53.46153846153846%' })
+})
+
+test('keeps moving right while D is held down', () => {
+  jest.useFakeTimers()
+  render(<App />)
+
   fireEvent.keyDown(window, { key: 'd' })
   expect(getPlayer()).toHaveStyle({ left: '7.333333333333333%' })
 
-  fireEvent.keyDown(window, { key: 's' })
-  expect(getPlayer()).toHaveStyle({ top: '53.46153846153846%' })
+  act(() => {
+    jest.advanceTimersByTime(55)
+  })
+
+  expect(getPlayer()).toHaveStyle({ left: '9.333333333333334%' })
+
+  fireEvent.keyUp(window, { key: 'd' })
+  jest.useRealTimers()
 })
 
 test('resets the player and shows encouragement after touching red', () => {
   render(<App />)
 
   for (let i = 0; i < 8; i += 1) {
-    fireEvent.keyDown(window, { key: 'd' })
+    pressKey('d')
   }
 
   expect(screen.getByText('du klarer dette:)')).toBeInTheDocument()
@@ -102,7 +124,7 @@ test('unlocks rainbow when the player reaches level 10', async () => {
 
   for (let level = 1; level < 10; level += 1) {
     for (let i = 0; i < 43; i += 1) {
-      fireEvent.keyDown(window, { key: 'd' })
+      pressKey('d')
     }
 
     await user.click(screen.getByRole('button', { name: 'neste' }))
@@ -140,7 +162,7 @@ test('asks if the player is sure before restarting after winning', async () => {
   render(<App />)
 
   for (let i = 0; i < 43; i += 1) {
-    fireEvent.keyDown(window, { key: 'd' })
+    pressKey('d')
   }
 
   expect(screen.getByText('du klarte det!')).toBeInTheDocument()
