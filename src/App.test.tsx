@@ -214,6 +214,42 @@ test('opens settings and toggles music on and off', async () => {
   jest.restoreAllMocks()
 })
 
+test('opens a full-screen dark blue levels menu with locked levels', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'nivåer' }))
+
+  expect(screen.getByRole('heading', { name: 'klar alle nivåene' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Nivå 1' })).toBeEnabled()
+  expect(screen.getByRole('button', { name: 'Nivå 2 låst' })).toBeDisabled()
+  expect(screen.getByText('25')).toBeInTheDocument()
+})
+
+test('unlocks the next level after winning and lets the player choose it', async () => {
+  const user = userEvent.setup()
+  const firstLevelObstacles = levels[0].obstacles
+  levels[0].obstacles = []
+
+  render(<App />)
+
+  for (let i = 0; i < 43; i += 1) {
+    pressKey('d')
+  }
+
+  await user.click(screen.getByRole('button', { name: 'neste' }))
+  expect(screen.getByText('Nivå 2 av 25')).toBeInTheDocument()
+
+  fireEvent.keyDown(window, { key: 'Escape' })
+  await user.click(screen.getByRole('button', { name: 'nivåer' }))
+  await user.click(screen.getByRole('button', { name: 'Nivå 1' }))
+
+  expect(screen.getByText('Nivå 1 av 25')).toBeInTheDocument()
+
+  levels[0].obstacles = firstLevelObstacles
+})
+
 test('asks if the player is sure before restarting after winning', async () => {
   const user = userEvent.setup()
   const firstLevelObstacles = levels[0].obstacles

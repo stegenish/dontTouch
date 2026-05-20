@@ -8,7 +8,7 @@ type Point = {
 }
 
 type GameStatus = 'playing' | 'crashed' | 'won'
-type MenuView = 'main' | 'colors' | 'language' | 'settings'
+type MenuView = 'main' | 'colors' | 'language' | 'settings' | 'levels'
 type Language = 'nb' | 'en' | 'de'
 
 type ColorChoice = {
@@ -60,6 +60,9 @@ const text = {
     gameTitle: 'Dont touch the red',
     languageHeading: 'bytt språk',
     levelOf: 'av',
+    levels: 'nivåer',
+    levelsHeading: 'klar alle nivåene',
+    lockedLevel: 'låst',
     next: 'neste',
     no: 'nei',
     obstacle: 'Rød firkant',
@@ -92,6 +95,9 @@ const text = {
     gameTitle: 'Dont touch the red',
     languageHeading: 'change language',
     levelOf: 'of',
+    levels: 'levels',
+    levelsHeading: 'clear all levels',
+    lockedLevel: 'locked',
     next: 'next',
     no: 'no',
     obstacle: 'Red square',
@@ -124,6 +130,9 @@ const text = {
     gameTitle: 'Dont touch the red',
     languageHeading: 'sprache wechseln',
     levelOf: 'von',
+    levels: 'level',
+    levelsHeading: 'schaffe alle level',
+    lockedLevel: 'gesperrt',
     next: 'weiter',
     no: 'nein',
     obstacle: 'Rotes Quadrat',
@@ -198,6 +207,7 @@ function App() {
   const [isMusicOn, setIsMusicOn] = useState(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [timerStartedAt, setTimerStartedAt] = useState(() => Date.now())
+  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(1)
   const heldKeys = useRef(new Set<string>())
   const musicRef = useRef<HTMLAudioElement>(null)
 
@@ -220,7 +230,7 @@ function App() {
 
   function resetLevel() {
     heldKeys.current.clear()
-    setTimerStartedAt(Date.now())
+    setTimerStartedAt(() => Date.now())
     setElapsedSeconds(0)
     setPosition(startPosition)
     setStatus('playing')
@@ -228,7 +238,21 @@ function App() {
   }
 
   function goToNextLevel() {
+    setHighestUnlockedLevel((currentHighest) =>
+      Math.min(Math.max(currentHighest, levelNumber + 1), levels.length),
+    )
     setLevelIndex((currentLevel) => (currentLevel + 1) % levels.length)
+    resetLevel()
+  }
+
+  function chooseLevel(nextLevelIndex: number) {
+    if (nextLevelIndex + 1 > highestUnlockedLevel) {
+      return
+    }
+
+    setLevelIndex(nextLevelIndex)
+    setIsMenuOpen(false)
+    setMenuView('main')
     resetLevel()
   }
 
@@ -435,6 +459,9 @@ function App() {
               <button type="button" onClick={() => setMenuView('language')}>
                 {copy.changeLanguage}
               </button>
+              <button className="levels-menu-button" type="button" onClick={() => setMenuView('levels')}>
+                {copy.levels}
+              </button>
               <button type="button" onClick={() => setMenuView('settings')}>
                 {copy.settings}
               </button>
@@ -497,6 +524,41 @@ function App() {
                     {choice.label}
                   </button>
                 ))}
+              </div>
+            </div>
+          ) : menuView === 'levels' ? (
+            <div className="levels-menu">
+              <button
+                aria-label={copy.back}
+                className="levels-back-button"
+                type="button"
+                onClick={() => setMenuView('main')}
+              >
+                {copy.back}
+              </button>
+              <h2>{copy.levelsHeading}</h2>
+              <div className="levels-grid">
+                {levels.map((gameLevel, index) => {
+                  const isUnlocked = index + 1 <= highestUnlockedLevel
+
+                  return (
+                    <button
+                      aria-label={
+                        isUnlocked
+                          ? gameLevel.name
+                          : `${gameLevel.name} ${copy.lockedLevel}`
+                      }
+                      className="level-select-button"
+                      disabled={!isUnlocked}
+                      key={gameLevel.name}
+                      onClick={() => chooseLevel(index)}
+                      type="button"
+                    >
+                      <span>{index + 1}</span>
+                      {!isUnlocked ? <small>{copy.lockedLevel}</small> : null}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           ) : (

@@ -245,6 +245,68 @@ button:focus-visible {
   background: #bbf7d0;
 }
 
+.levels-menu-button {
+  background: #172554;
+  color: #ffffff;
+}
+
+.levels-menu {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  padding: 32px;
+  border: 0;
+  background: #172554;
+  color: #ffffff;
+}
+
+.levels-menu h2 {
+  margin: 46px 0 0;
+  color: #ffffff;
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  font-weight: 900;
+  text-align: center;
+}
+
+.levels-back-button {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+}
+
+.levels-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(82px, 1fr));
+  gap: 14px;
+  width: min(760px, 100%);
+  margin: 0 auto 32px;
+}
+
+.level-select-button {
+  display: grid;
+  place-items: center;
+  min-height: 76px;
+  background: #dbeafe;
+}
+
+.level-select-button span {
+  font-size: 1.5rem;
+}
+
+.level-select-button small {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.level-select-button:disabled {
+  cursor: not-allowed;
+  background: #64748b;
+  color: #e2e8f0;
+}
+
 .confirm-card h2 {
   margin: 0 0 12px;
   color: #111827;
@@ -349,5 +411,13 @@ button:focus-visible {
 
   .color-grid {
     grid-template-columns: repeat(2, 72px);
+  }
+
+  .levels-menu {
+    padding: 18px;
+  }
+
+  .levels-grid {
+    grid-template-columns: repeat(3, minmax(72px, 1fr));
   }
 }

@@ -27,6 +27,8 @@ Appen er nå et enkelt 2D hinderløype-spill.
 - Hovedmenyen har `bytt språk`, med norsk bokmål, engelsk og tysk.
 - Hovedmenyen har `instillinger`, med valgene `skygger` og `musikk`. Begge har knappene `av` og `på`.
 - Bakgrunnsmusikken leses fra `public/gvidon-gvidon-medicine-364031.mp3`.
+- Hovedmenyen har `nivåer`, som åpner en mørk blå helskjerm-meny med teksten `klar alle nivåene`.
+- Nivåmenyen viser alle 25 nivåer, men nivåer er låst til spilleren har åpnet dem ved å vinne tidligere nivåer.
 
 ## Kjente mangler
 - Nivåene er foreløpig statiske og har ingen animasjoner.
